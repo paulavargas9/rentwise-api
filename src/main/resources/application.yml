@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: rentwise-api
+  datasource:
+    url: jdbc:mysql://localhost:3307/rentwise?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${MYSQL_USER:rentwise}
+    password: ${MYSQL_PASSWORD:rentwise}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://rentwise:rentwise@localhost:27018/rentwise?authSource=admin}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+app:
+  security:
+    hmac:
+      timeWindowSeconds: 300
+      masterKey: ${APP_MASTER_KEY:dev-unsafe-master-key}
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:mysql://localhost:3307/rentwise_test?useSSL=false&serverTimezone=UTC
+    username: test
+    password: test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  data:
+    mongodb:
+      uri: mongodb://localhost:27018/rentwise_test
+management:
+  endpoint:
+    health:
+      show-details: never

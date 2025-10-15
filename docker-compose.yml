@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: rentwise-mysql
+    command: --default-authentication-plugin=caching_sha2_password --explicit_defaults_for_timestamp=ON
+    environment:
+      - MYSQL_DATABASE=rentwise
+      - MYSQL_USER=rentwise
+      - MYSQL_PASSWORD=rentwise
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=UTC
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-prentwise"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    container_name: rentwise-mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rentwise
+      - MONGO_INITDB_ROOT_PASSWORD=rentwise
+      - MONGO_INITDB_DATABASE=rentwise
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql_data:
+  mongo_data:
